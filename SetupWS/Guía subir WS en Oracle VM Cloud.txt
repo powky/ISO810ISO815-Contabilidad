@@ -1,0 +1,25 @@
+Para subir una maquina virtual gratis en Oracle Cloud y poner a correr un API usando Flask
+Seguir este tuto completo oficial: https://docs.oracle.com/en-us/iaas/developer-tutorials/tutorials/flask-on-ubuntu/01oci-ubuntu-flask-summary.htm#install-flask-ubuntu
+
+Cuando se completa todo y ya hayas ingresado a la maq virtual por Terminal/CMD, editar el archivo bash para incluir los PATH de Oracle (en caso de usar Oracle):
+
+pip3 install cx-Oracle si usas Oracle
+pip3 install Flask
+sudo vi .bashrc
+
+Incluir:
+
+export PATH=/path/to/instantclient:$PATH
+export LD_LIBRARY_PATH=/path/to/instantclient:$LD_LIBRARY_PATH
+export ORACLE_HOME=/path/to/instantclient
+export OCI_LIB_DIR=/path/to/instantclient
+export OCI_INC_DIR=/path/to/instantclient/sdk/include
+
+source .bashrc
+
+Descargar el Instant Client Basic de Linux y descomprimirlo en la ruta deseada dentro de la maquina virtual (especificada en los export de arriba), cambiarle el nombre a la carpeta para que sea solo "instantclient"
+Revisar el archivo sqlnames.ora ya que ahi se especifica la ruta del Wallet y puede estar mal, si esta mal actualizarlo (en mi caso yo lo puse dentro de la carpeta admin/network del Instant Client)
+
+Conectar a la MV:
+ssh -i <your-private-key-file> ubuntu@<x.x.x.x>
+ssh -i priv.key ubuntu@129.80.203.120

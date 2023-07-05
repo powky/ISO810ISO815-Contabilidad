@@ -1,0 +1,4 @@
+Descargar el programa QtDesigner y todos sus componentes y dependencias por línea de comandos.
+Cuando ya tengas el archivo .ui producto del programa Qt Designer, correr este comando (yo uso macOS, revisa tu sistema operativo)
+
+/Users/YourUser/Library/Python/3.9/bin/pyuic5 -x entrada.ui -o salida.py

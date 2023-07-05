@@ -1,0 +1,63 @@
+Como consumir el endpoint de contabilidad.
+
+
+ENDPOINT: http://129.80.203.120:5000/post-accounting-entries
+METODO: POST
+REQUEST HEADERS: 
+    Content-Type: application/json
+
+REQUEST BODY: 
+    {
+        "descripcion": "juan pablo klk",
+        "auxiliar": 1,
+        "cuentaDB": 1,
+        "cuentaCR": 1,
+        "monto": 1000.45
+    }
+
+Valor para "descripcion" lo que quieras
+Valor para "monto" lo que quieras incluyendo decimales
+
+Valores para "auxiliar" posibles (enviar el ID correspondiente):
+ID  NAME
+1	Contabilidadd
+2	Nomina
+3	Facturacion
+4	Inventario
+5	Cuentas x Cobrar
+6	Cuentas x Pagar
+7	Compras
+8	Activos Fijos
+9	Cheques
+41	test
+
+Valores para "cuentaDB" y "cuentaCR" posibles (enviar el ID correspondiente):
+ID  DESCRIPTION
+1	Activos
+2	Efectivo en caja y banco
+3	Caja Chica
+4	Cuenta Corriente Banco X
+5	Inventarios y Mercancias
+6	test
+7	Cuentas x Cobrar
+8	Cuentas x Cobrar Cliente X
+12	Ventas
+13	Ingresos x Ventas
+47	Gastos
+48	Gastos Administrativos
+50	Gastos Generales
+65	Gasto depreciación Activos Fijos
+66	Depreciación Acumulada Activos Fijos
+70	Salarios y Sueldos Empleados
+71	Gastos de Nomina Empresa
+80	Compra de Mercancias
+81	Cuentas x Pagar
+
+
+Metodo para ver los campos que tiene la tabla (puedes filtrar por auxiliar):
+
+ENDPOINT: http://129.80.203.120:5000/get-accounting-entries <- Te trae todos los datos de la tabla
+ENDPOINT: http://129.80.203.120:5000/get-accounting-entries/auxiliar=ID-AUXILIAR <- Te trae todos los datos de la tabla filtrando por auxiliar
+METODO: GET
+REQUEST HEADERS: N/A
+REQUEST BODY: N/A
