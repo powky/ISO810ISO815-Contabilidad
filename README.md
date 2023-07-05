@@ -19,4 +19,8 @@ Desarrolle un Sistema de Contabilidad que cumpla con las siguientes característ
 # Como hacer correr el proyecto de forma local
 
 En cada carpeta se encuentra un .txt con cada instrucción.
-To-do: como correr el proyecto general local
+
+# TO-DO
+
+1. Instrucciones de como correr el proyecto general local con todos los CRUDs
+2. Interfaz con el Sistema de actualización usando Servicios Web Públicos (Tasa Cambiaria)
