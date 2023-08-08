@@ -3,12 +3,13 @@ from PyQt5.QtWidgets import QMessageBox
 import cx_Oracle
 import os
 import datetime
+import requests
 
 class Ui_TabWidget(QtCore.QObject):
 
     # Conexión de DB
     os.environ['TNS_ADMIN'] = '/path/to/instantclient_19_8/network/admin'
-    connection = cx_Oracle.connect('username', 'password', 'tnsname')
+    connection = cx_Oracle.connect('user', 'pass', 'tns')
     row_selected = QtCore.pyqtSignal(list)
 
     # Declarar algunas variables para manejo de UI
@@ -1898,6 +1899,63 @@ class Ui_TabWidget(QtCore.QObject):
         except Exception as e:
             QMessageBox.critical(None, "Error", f"Error al actualizar: {str(e)}")
 
+    # Funciones para actualizar la tasa desde API
+    
+    def fetch_currency_rate(self, currency):
+        endpoint = "https://webservice20230807213022.azurewebsites.net/api/tasa/{currency}"
+        url = endpoint.format(currency=currency)
+        response = requests.get(url)
+        if response.status_code == 200:
+            data = response.json()
+            return data.get("tasa")
+        return None
+
+    def update_currency_rate(self):
+        currency_id = self.currencyIdTxt.toPlainText()
+        currency_desc = self.currencyDescTxt.toPlainText()
+        currency_rate = self.currencyRateTxt.toPlainText()
+
+        # Ensure the required fields are not empty
+        if not all([currency_id, currency_desc, currency_rate]):
+            return
+
+        try:
+            currency_rate = float(currency_rate)
+        except ValueError:
+            # Invalid rate format, show an error message
+            QMessageBox.warning(None, "Error", "La tasa no tiene un formato correcto.")
+            return
+
+        # Fetch the current rate from the API
+        new_rate = self.fetch_currency_rate(currency_desc)
+
+        if new_rate is None:
+            # Failed to fetch rate from the API, show an error message
+            QMessageBox.warning(None, "Error", "Error al intentar obtener la tasa.")
+            return
+
+        if currency_rate != new_rate:
+            rate_diff = new_rate - currency_rate
+            QMessageBox.information(None, "¡Éxito!", f"El nuevo precio de {currency_desc} es {new_rate} por lo que ha {'subido' if rate_diff > 0 else 'bajado'} {abs(rate_diff):.2f} pesos dominicanos y se actualizó en el sistema de forma exitosa.")
+
+            # Update the currency rate in the database
+            cursor = self.connection.cursor()
+            try:
+                cursor.execute("UPDATE currency SET rate = :new_rate WHERE description = :currency",
+                               new_rate=new_rate, currency=currency_desc)
+                self.connection.commit()
+                self.clear_text_fields() # Llamar función que limpia campos de texto del UI
+                self.query_currency()  # Refresh the table with updated data
+            except cx_Oracle.Error as error:
+                # Error updating the database, show an error message
+                QMessageBox.warning(None, "Error", f"Error al intentar actualizar la tabla: {error}")
+                self.connection.rollback()
+            finally:
+                cursor.close()
+
+        else:
+            QMessageBox.information(None, "Sin cambios", "La tasa sigue teniendo el mismo precio.")
+
     # Funciones encargadas de leer y actualizar el UI masivamente
 
     def update_button_enabled(self):
@@ -2100,6 +2158,7 @@ class Ui_TabWidget(QtCore.QObject):
             self.entriesInsertBtn.setEnabled(False)
             self.auxInsertBtn.setEnabled(False)
             self.accountingInsertBtn.setEnabled(False)
+            self.currencyFetchBtn.setEnabled(False)
             
         # Si no es el mismo, significa que selecciona un nuevo registro y lo pintamos en pantalla
         else:
@@ -2153,6 +2212,7 @@ class Ui_TabWidget(QtCore.QObject):
                 self.previous_selected_row = row
                 self.currencyDeleteBtn.setEnabled(True)
                 self.currencyUpdateBtn.setEnabled(False)
+                self.currencyFetchBtn.setEnabled(True)
             elif table == self.auxTable:
                 self.auxIdTxt.setText(row[0])
                 self.auxDescTxt.setText(row[1])
@@ -2260,7 +2320,6 @@ if __name__ == "__main__":
     ui.query_currency()
     ui.query_auxsys()
     ui.query_entries()
-    ui.currencyFetchBtn.setEnabled(False)
 
     try:
         ui.accountingTable.itemSelectionChanged.disconnect()
@@ -2286,6 +2345,7 @@ if __name__ == "__main__":
     ui.currencyDeleteBtn.clicked.connect(ui.delete_currency)
     ui.currencyFilterBtn.clicked.connect(ui.filter_currency)
     ui.currencyUpdateBtn.clicked.connect(ui.update_currency)
+    ui.currencyFetchBtn.clicked.connect(ui.update_currency_rate)
 
     # Botones de vista de auxiliares
     ui.auxInsertBtn.clicked.connect(ui.insert_aux)
