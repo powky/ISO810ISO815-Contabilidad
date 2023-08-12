@@ -16,7 +16,7 @@ cursor = development_config.cursor
 @app.route("/get-accounting-entries", methods=["GET"])
 def listar_asientocontable():
     try:
-        sql = "SELECT * FROM accounting_entries"
+        sql = "SELECT * FROM accounting_entries ORDER BY id DESC"
         cursor.execute(sql)
         datos = cursor.fetchall()
         print(datos)
@@ -71,7 +71,7 @@ def leer_asientocontable(codigo):
 # Funcion para filtrar dentro de la tabla usando ID
 def leer_asientocontable_bd(codigo):
     try:
-        sql = "SELECT * FROM accounting_entries WHERE id = '{0}'".format(
+        sql = "SELECT * FROM accounting_entries WHERE id = '{0}' ORDER BY id DESC".format(
             codigo
         )
         cursor.execute(sql)
@@ -119,7 +119,7 @@ def leer_asientocontable_aux(id):
 # Funcion para filtrar dentro de la tabla usando ID de auxiliar 
 def leer_asientocontable_bd_by_aux(id):
     try:
-        sql = "SELECT * FROM accounting_entries WHERE aux_id = '{0}'".format(id)
+        sql = "SELECT * FROM accounting_entries WHERE aux_id = '{0}'ORDER BY id DESC".format(id)
         cursor.execute(sql)
         datos = cursor.fetchall()
         asientos_contables = []  # Create an empty list to store multiple rows
