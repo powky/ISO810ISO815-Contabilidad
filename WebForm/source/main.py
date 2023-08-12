@@ -610,7 +610,8 @@ class Ui_TabWidget(QtCore.QObject):
                         (SELECT b.name FROM aux_systems b WHERE b.id = a.aux_id) as aux_id,
                         (SELECT c.description FROM accounting_accs c WHERE c.id = a.accs_id) as accs_id,
                         mov_type, entry_date, amount, status
-                        FROM accounting_entries a""")
+                        FROM accounting_entries a
+                        ORDER BY id DESC""")
         
         # Preparar la tabla para recibir los datos
         rows = cursor.fetchall()
@@ -1904,41 +1905,41 @@ class Ui_TabWidget(QtCore.QObject):
     def fetch_currency_rate(self, currency):
         endpoint = "https://webservice20230807213022.azurewebsites.net/api/tasa/{currency}"
         url = endpoint.format(currency=currency)
-        response = requests.get(url)
+        response = requests.get(url) # Hacemos GET al endpoint de arriba
         if response.status_code == 200:
             data = response.json()
-            return data.get("tasa")
+            return data.get("tasa") # Si la respuesta es exitosa, retornamos la tasa nueva
         return None
 
     def update_currency_rate(self):
+        # Guadamos los valores de los campos de texto en variables temporales
         currency_id = self.currencyIdTxt.toPlainText()
         currency_desc = self.currencyDescTxt.toPlainText()
         currency_rate = self.currencyRateTxt.toPlainText()
 
-        # Ensure the required fields are not empty
+        # Aseguramos que todos los campos estan completos
         if not all([currency_id, currency_desc, currency_rate]):
             return
 
+        # Aseguramos que la tasa actual es un tipo float
         try:
             currency_rate = float(currency_rate)
         except ValueError:
-            # Invalid rate format, show an error message
-            QMessageBox.warning(None, "Error", "La tasa no tiene un formato correcto.")
+            QMessageBox.warning(None, "Error", "La tasa no tiene un formato correcto.") # Mostrar error si no es float
             return
 
-        # Fetch the current rate from the API
-        new_rate = self.fetch_currency_rate(currency_desc)
+        new_rate = self.fetch_currency_rate(currency_desc) # Llamamos la función que retorna la tasa nueva
 
         if new_rate is None:
-            # Failed to fetch rate from the API, show an error message
-            QMessageBox.warning(None, "Error", "Error al intentar obtener la tasa.")
+            QMessageBox.warning(None, "Error", "Error al intentar obtener la tasa.") # Si retorna nada por cualquier motivo, mostramos un error
             return
 
         if currency_rate != new_rate:
+            # Cáculo para saber cual es la diferencia de tasa nueva
             rate_diff = new_rate - currency_rate
             QMessageBox.information(None, "¡Éxito!", f"El nuevo precio de {currency_desc} es {new_rate} por lo que ha {'subido' if rate_diff > 0 else 'bajado'} {abs(rate_diff):.2f} pesos dominicanos y se actualizó en el sistema de forma exitosa.")
 
-            # Update the currency rate in the database
+            # Actualizamos en la base de datos la tasa que acabamos de obtener
             cursor = self.connection.cursor()
             try:
                 cursor.execute("UPDATE currency SET rate = :new_rate WHERE description = :currency",
@@ -1947,12 +1948,13 @@ class Ui_TabWidget(QtCore.QObject):
                 self.clear_text_fields() # Llamar función que limpia campos de texto del UI
                 self.query_currency()  # Refresh the table with updated data
             except cx_Oracle.Error as error:
-                # Error updating the database, show an error message
+                # Error si no se puede actualizar en la base de datos por cualquier motivo
                 QMessageBox.warning(None, "Error", f"Error al intentar actualizar la tabla: {error}")
                 self.connection.rollback()
             finally:
                 cursor.close()
 
+        # Si la tasa es igual, indicamos que no hay cambios con un error y no hacemos nada
         else:
             QMessageBox.information(None, "Sin cambios", "La tasa sigue teniendo el mismo precio.")
 

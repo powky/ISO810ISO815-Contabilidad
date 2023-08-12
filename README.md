@@ -16,6 +16,12 @@ Desarrolle un Sistema de Contabilidad que cumpla con las siguientes característ
 7. Una consulta por criterios (ej: Entradas Contables x Cuenta, fecha, etc.)
 8. Desarrrollado en el lenguaje Propietario de su preferencia
 
-# Como hacer correr el proyecto de forma local
+# Set up del Web Service
 
-En cada carpeta se encuentra un .txt con cada instrucción.
+En cada carpeta se encuentra un .txt con cada instrucción para cada componente.
+
+# Set up del programa local general
+
+1. Instalar Python de 64 bits (si usas Mac con ARM, correr la terminal con Rossetta 2)
+2. Installar requests, PyQt5, cx_Oracle usando pip
+3. Hacer set up de la DB de Oracle en la nube y configurar el InstantClient correctamente y usando conexión vía Wallet, recordar configurar el TNS correctamente de forma local en la carpeta /network/admin dentro de la carpeta de InstantClient.
