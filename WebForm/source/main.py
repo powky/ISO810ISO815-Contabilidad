@@ -1,5 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QMessageBox
+from dotenv import load_dotenv
 import cx_Oracle
 import os
 import datetime
@@ -8,8 +9,9 @@ import requests
 class Ui_TabWidget(QtCore.QObject):
 
     # Conexión de DB
-    os.environ['TNS_ADMIN'] = '/path/to/instantclient_19_8/network/admin'
-    connection = cx_Oracle.connect('user', 'pass', 'tns')
+    load_dotenv()
+    os.environ['TNS_ADMIN'] = os.getenv("admin")
+    connection = cx_Oracle.connect(os.getenv("user"), os.getenv("pass"), os.getenv("tns"))
     row_selected = QtCore.pyqtSignal(list)
 
     # Declarar algunas variables para manejo de UI

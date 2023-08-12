@@ -23,5 +23,8 @@ En cada carpeta se encuentra un .txt con cada instrucción para cada componente.
 # Set up del programa local general
 
 1. Instalar Python de 64 bits (si usas Mac con ARM, correr la terminal con Rossetta 2)
-2. Installar requests, PyQt5, cx_Oracle usando pip
+2. Installar requests, PyQt5, cx_Oracle y python-dotenv usando pip
 3. Hacer set up de la DB de Oracle en la nube y configurar el InstantClient correctamente y usando conexión vía Wallet, recordar configurar el TNS correctamente de forma local en la carpeta /network/admin dentro de la carpeta de InstantClient.
+4. Poner las credenciales de DB y path de la carpeta admin en el archivo .env en las variables que corresponda
+5. Asegurarse que el archivo login.py y main.py esten en la misma carpeta
+6. Correr el proyecto con python3 login.py
