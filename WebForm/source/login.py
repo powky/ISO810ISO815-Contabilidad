@@ -1,5 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QMessageBox
+from dotenv import load_dotenv
 import cx_Oracle
 import subprocess
 import os
@@ -9,6 +10,7 @@ class Ui_Contabilidad(object):
 
     def __init__(self, window):
         self.window = window
+        load_dotenv()
 
     # Definición del UI 
 
@@ -52,8 +54,8 @@ class Ui_Contabilidad(object):
         password = self.lineEdit_2.text() 
 
         # Conexión a la base de datos
-        os.environ['TNS_ADMIN'] = '/path/to/instantclient_19_8/network/admin'
-        connection = cx_Oracle.connect('username', 'password', 'tnsname')
+        os.environ['TNS_ADMIN'] = os.getenv("ORA_ADMIN")
+        connection = cx_Oracle.connect(os.getenv("ORA_USER"), os.getenv("ORA_PASS"), os.getenv("ORA_TNS"))
         cursor = connection.cursor()
         result = cursor.var(cx_Oracle.STRING)
         cursor.callproc("proc_check_credentials", [username, password, result]) # Consumir el Stored Procedure
