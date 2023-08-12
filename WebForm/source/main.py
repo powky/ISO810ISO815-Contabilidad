@@ -10,8 +10,8 @@ class Ui_TabWidget(QtCore.QObject):
 
     # Conexión de DB
     load_dotenv()
-    os.environ['TNS_ADMIN'] = os.getenv("admin")
-    connection = cx_Oracle.connect(os.getenv("user"), os.getenv("pass"), os.getenv("tns"))
+    os.environ['TNS_ADMIN'] = os.getenv("ADMIN")
+    connection = cx_Oracle.connect(os.getenv("USER"), os.getenv("PASS"), os.getenv("TNS"))
     row_selected = QtCore.pyqtSignal(list)
 
     # Declarar algunas variables para manejo de UI
